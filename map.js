@@ -1,30 +1,17 @@
-var mymap = L.map('mapid').setView([54.98, -1.61], 13);
+var fumeyMap = L.map('mapid').setView([54.98, -1.61], 13);
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
   maxZoom: 18,
   id: 'mapbox.streets',
   accessToken: 'pk.eyJ1IjoicGFhYXQiLCJhIjoiY2o1ZmFyZGg2MHg0ZzMzcnllejRjYnBobiJ9.iktT5ifPtfphaeOKUCQhkw'
-}).addTo(mymap);
+}).addTo(fumeyMap);
 
 
 var sensorsJSON = [];
 var mapMarkers = [];
 getData(); //this calls the function that retrieves the current sensor data from
 //Urban Observatory
-
-
-
-// var no2Button = document.getElementById('no2');
-// var noButton = document.getElementById('no1');
-// var coButton = document.getElementById('co');
-// var allButton = document.getElementById('all');
-//
-// noButton.onclick = handle();
-//
-// function handle(){
-//   console.log("niox");
-// }
 
 function getData() {
   console.log("Retrieving Data...");
@@ -38,14 +25,12 @@ function getData() {
       sensorsJSON = []; //this clears the array of sensors, in essence
       //deleting the old data before the new data is processed
 
-      //var sensorsStringified = JSON.stringify(data);
-      //alert(sensorsStringified);
-
       for (var i = 0; i < data.length; i++) {
         sensorsJSON.push(data[i]);
         console.log(data[i]);
       }
-      plotNO2();
+      plot();//This will plot whichever pollutant is selected in the radio button
+      //choices in the map.html file. At page load this will default to NO2.
     }
   });
 }
@@ -70,7 +55,8 @@ function mapOnlySensorLocations(arrayOfSensors) {
   }
 }
 
-function plot() {
+function plot() { //This function chooses which pollutant to plot on the map based
+  //on which option is checked by the user. It then initiates the relevent function.
   console.log("Plotting");
   clearMarkers(); //This clears the mapped points so they can be replaced with new ones
 
@@ -89,12 +75,14 @@ function plot() {
   }
   else {
     console.log("error - no pollutant selected");
+    //Due to the nature of raio buttons, this should never happen.
   }
 
 }
 
 function plotNO(){
   var level;
+  var levelAndUnits;
   var lat;
   var long;
 
@@ -107,21 +95,37 @@ function plotNO(){
 
     if (typeof sensorsJSON[i].data.NO !== 'undefined') {
       level = sensorsJSON[i].data.NO.data[sensorsJSON[i].latest];
+      if (document.getElementById('round').checked){
+        level = Math.round(level * 100)/100; //This plots level to two decimal places.
+        //As Math.round only rounds to the nearest integer, a quick and dirty way
+        //to plot to two decimal places is to multiple by 100, round, and divide
+        //by 100 again to get the desired result.
+      }
+      levelAndUnits = level + " " + sensorsJSON[i].data.NO.meta.units;
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
 
-  var colour = "red";
-  var message = "NO Level: " + level;
+  var colour = "green";
+  if (level > 40){
+    colour = "orange";
+  }
+  if (level > 80){
+    colour = "red";
+  }
+  var message = "NO Level: " + levelAndUnits;
 
+  if (level !== -999){ //This plots the point on the map, providing this sensor
+    //has data for the pollutant and has not returned the error level -999
   addMarker(lat, long, message, colour);
-    //NOW CHOOSE THE COLOUR THEN addMarker() IF NOLevel NOT -999
+    }
   }
 
 }
 
 function plotNO2(){
   var level;
+  var levelAndUnits;
   var lat;
   var long;
 
@@ -134,21 +138,33 @@ function plotNO2(){
 
     if (typeof sensorsJSON[i].data.NO2 !== 'undefined') {
       level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
+      if (document.getElementById('round').checked){
+        level = Math.round(level * 100)/100;
+      }
+      levelAndUnits = level + " " + sensorsJSON[i].data.NO2.meta.units;
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
 
-  var colour = "red";
-  var message = "NO2 Level: " + level;
-
-  addMarker(lat, long, message, colour);
-    //NOW CHOOSE THE COLOUR THEN addMarker() IF NOLevel NOT -999
+  var colour = "green";
+  if (level > 40){
+    colour = "orange";
   }
+  if (level > 80){
+    colour = "red";
+  }
+  var message = "NO2 Level: " + levelAndUnits;
 
+  if (level !== -999){ //This plots the point on the map, providing this sensor
+    //has data for the pollutant and has not returned the error level -999
+  addMarker(lat, long, message, colour);
+    }
+  }
 }
 
 function plotCO(){
   var level;
+  var levelAndUnits;
   var lat;
   var long;
 
@@ -161,15 +177,29 @@ function plotCO(){
 
     if (typeof sensorsJSON[i].data.CO !== 'undefined') {
       level = sensorsJSON[i].data.CO.data[sensorsJSON[i].latest];
+      if (document.getElementById('round').checked){
+        level = Math.round(level * 100)/100;
+      }
+      levelAndUnits = level + " " + sensorsJSON[i].data.CO.meta.units;
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
 
-  var colour = "red";
-  var message = "CO Level: " + level;
+  var colour = "green";
+  if (level > 0.3){
+    colour = "orange";
+  }
+  if (level > 0.6){
+    colour = "red";
+  }
 
+
+  var message = "CO Level: " + levelAndUnits;
+
+  if (level !== -999){ //This plots the point on the map, providing this sensor
+    //has data for the pollutant and has not returned the error level -999
   addMarker(lat, long, message, colour);
-    //NOW CHOOSE THE COLOUR THEN addMarker() IF NOLevel NOT -999
+    }
   }
 
 }
@@ -178,6 +208,10 @@ function plotAll(arrayOfSensors) {
   console.log("Plotting all");
   var lat;
   var long;
+  var numberOfPollutants = 0; //If a sensor contains a pollutant, this variable
+  //will have 1 added to it. If it still equals 0 after a particular sensor
+  //has been processed, that means the sensor contains no NO2, NO or CO readings
+  //and is therefore not plotted on the map.
 
   for (var i = 0; i < arrayOfSensors.length; i++) {
 
@@ -208,30 +242,48 @@ function plotAll(arrayOfSensors) {
 
     if (typeof arrayOfSensors[i].data.NO2 !== 'undefined') {
       no2Level = arrayOfSensors[i].data.NO2.data[latestTime];
-      no2 = "NO2: " + no2Level;
-
-    } else {
+      if (document.getElementById('round').checked){
+        no2Level = Math.round(no2Level * 100)/100;
+      }
+      no2 = "NO2: " + no2Level + " " + sensorsJSON[i].data.NO2.meta.units;
+      numberOfPollutants++;
+    }
+    else {
       no2 = "No NO2 data from this sensor";
     }
 
     if (typeof arrayOfSensors[i].data.NO !== 'undefined') {
       noLevel = arrayOfSensors[i].data.NO.data[latestTime];
-      no = "NO: " + noLevel;
-
-    } else {
+      if (document.getElementById('round').checked){
+        noLevel = Math.round(noLevel * 100)/100;
+      }
+      no = "NO: " + noLevel + " " + sensorsJSON[i].data.NO.meta.units;
+      numberOfPollutants++;
+    }
+    else {
       no = "No NO data from this sensor";
     }
 
     if (typeof arrayOfSensors[i].data.CO !== 'undefined') {
       coLevel = arrayOfSensors[i].data.CO.data[latestTime];
-      co = "CO: " + coLevel;
-    } else {
+      if (document.getElementById('round').checked){
+        coLevel = Math.round(coLevel * 100)/100;
+      }
+      co = "CO: " + coLevel + " " + sensorsJSON[i].data.CO.meta.units;
+      numberOfPollutants++;
+    }
+    else {
       co = "No CO data from this sensor";
     }
 
+    if(numberOfPollutants > 0){ //This plots the sensor if it has at least one
+      //reading for NO2, NO or CO data. The colour is black as this feature is
+      //not colour coded.
     var colour = "black";
     var results = no2 + " " + no + " " + co;
     addMarker(lat, long, results, colour);
+    }
+    numberOfPollutants = 0; //This resets the numberOfPollutants variable.
   }
 }
 
@@ -239,8 +291,8 @@ function addMarker(lat, long, message, colour) {
 
   var circle = L.circle([long, lat], {
     color: colour,
-    radius: 25
-  }).addTo(mymap);
+    radius: 45
+  }).addTo(fumeyMap);
 
   mapMarkers.push(circle);
 
@@ -255,27 +307,3 @@ function clearMarkers() {
     }
     mapMarkers = [];
 }
-
-function calculateColour(no2, no, co) {
-
-
-
-  return "red";
-
-}
-
-function ooo() {
-
-  console.log("plotNO");
-  document.getElementById("demo").innerHTML = "Nitrous Oxide (NO)";
-
-}
-// function plotNO(){
-//
-//   console.log("plotNO");
-//
-//
-//
-//
-//
-// }
