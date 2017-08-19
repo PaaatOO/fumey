@@ -1,4 +1,5 @@
-var fumeyMap = L.map('mapid').setView([54.98, -1.61], 13);
+var fumeyMap = L.map('mapid').setView([54.98, -1.61], 14); //This creates the
+//map and sets its starting view as Newcastle-upon-Tyne.
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -6,15 +7,29 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   id: 'mapbox.streets',
   accessToken: 'pk.eyJ1IjoicGFhYXQiLCJhIjoiY2o1ZmFyZGg2MHg0ZzMzcnllejRjYnBobiJ9.iktT5ifPtfphaeOKUCQhkw'
 }).addTo(fumeyMap);
+//This adds the tile layer to the map, or the visual aspect. It is an open source
+//tile layer from https://www.mapbox.com/
 
 
-var sensorsJSON = [];
-var mapMarkers = [];
+var sensorsJSON = []; //This array contains all the sensor JSON objects provided
+//by the Urban Observatory. It is initiated as empty but will be filled by getData().
+
+var mapMarkers = []; //This array contains all the point currently plotted on the
+//map. It is initated as empty but will be filled by plot().
+
 getData(); //this calls the function that retrieves the current sensor data from
-//Urban Observatory
+//Urban Observatory, which itself calls plot() to plot the data on the map. which
+//data is plotted depends on the radio button selected by the user when the data
+//successfully loads. Note that the data request can sometimes take in excess of
+//ten seconds to load.
+
+autoRefreshData(120000);//this calls the auto refresh function with a time to
+//wait before the next refresh of 2 minutes (in milliseconds).
 
 function getData() {
   console.log("Retrieving Data...");
+  document.getElementById("refreshSign").innerHTML = "Retrieving Data...";
+
   return $.ajax({
     url: "http://uoweb1.ncl.ac.uk/api/v1/sensors/live.json?sensor_type=Air%20Quality&api_key=ijme39nrfrtuj8gz6ny4cvq1sp0gf5uto7p80v5kmvnhf5l86bxqlk33zap5x0wtwfur66x34fslel1j1g2h6jdxfs",
     type: "get",
@@ -23,36 +38,29 @@ function getData() {
     success: function(data) { //the data variable is what the server returns, ie the JSON requested
 
       sensorsJSON = []; //this clears the array of sensors, in essence
-      //deleting the old data before the new data is processed
+      //deleting any old data before the new data is processed
 
       for (var i = 0; i < data.length; i++) {
         sensorsJSON.push(data[i]);
         console.log(data[i]);
       }
       plot();//This will plot whichever pollutant is selected in the radio button
-      //choices in the map.html file. At page load this will default to NO2.
+      //choices in the map.html file.
+      document.getElementById("refreshSign").innerHTML = "";
     }
   });
+
 }
 
-function mapOnlySensorLocations(arrayOfSensors) {
-  console.log("mapping sensor locations only");
-  var lat;
-  var long;
-
-  for (var i = 0; i < arrayOfSensors.length; i++) {
-
-    lat = arrayOfSensors[i].geom.coordinates[0];
-    long = arrayOfSensors[i].geom.coordinates[1];
-    lat = lat - 0;
-    long = long - 0; //this converts the JSON values long and lat to numbers
-
-    var id = i + 1;
-    id = "" + id; //converts id to a String, which is required in addMarker when the ID is a popup
-
-    addMarker(lat, long, id);
-
+function autoRefreshData(milliseconds){
+      setTimeout(autoRefreshIfChecked, milliseconds);
   }
+
+function autoRefreshIfChecked(){
+  if (document.getElementById('autoRefresh').checked){
+    getData();
+  }
+  autoRefreshData(120000);
 }
 
 function plot() { //This function chooses which pollutant to plot on the map based
@@ -82,9 +90,10 @@ function plot() { //This function chooses which pollutant to plot on the map bas
 
 function plotNO(){
   var level;
-  var levelAndUnits;
+  var message;
   var lat;
   var long;
+  var colour;
 
   for (var i = 0; i < sensorsJSON.length; i++) {
 
@@ -95,25 +104,27 @@ function plotNO(){
 
     if (typeof sensorsJSON[i].data.NO !== 'undefined') {
       level = sensorsJSON[i].data.NO.data[sensorsJSON[i].latest];
+
+      colour = "green";
+      if (level > 40){
+        colour = "orange";
+      }
+      if (level > 80){
+        colour = "red";
+      }
       if (document.getElementById('round').checked){
         level = Math.round(level * 100)/100; //This plots level to two decimal places.
         //As Math.round only rounds to the nearest integer, a quick and dirty way
         //to plot to two decimal places is to multiple by 100, round, and divide
         //by 100 again to get the desired result.
       }
-      levelAndUnits = level + " " + sensorsJSON[i].data.NO.meta.units;
+      message = "NO Level: " + level + " " + sensorsJSON[i].data.NO.meta.units;
+
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
 
-  var colour = "green";
-  if (level > 40){
-    colour = "orange";
-  }
-  if (level > 80){
-    colour = "red";
-  }
-  var message = "NO Level: " + levelAndUnits;
+
 
   if (level !== -999){ //This plots the point on the map, providing this sensor
     //has data for the pollutant and has not returned the error level -999
@@ -125,9 +136,10 @@ function plotNO(){
 
 function plotNO2(){
   var level;
-  var levelAndUnits;
+  var message;
   var lat;
   var long;
+  var colour;
 
   for (var i = 0; i < sensorsJSON.length; i++) {
 
@@ -138,35 +150,39 @@ function plotNO2(){
 
     if (typeof sensorsJSON[i].data.NO2 !== 'undefined') {
       level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
+
+      colour = "green";
+      if (level > 50){
+        colour = "orange";
+      }
+      if (level > 150){
+        colour = "red";
+      }
+
       if (document.getElementById('round').checked){
         level = Math.round(level * 100)/100;
       }
-      levelAndUnits = level + " " + sensorsJSON[i].data.NO2.meta.units;
+
+      message = "NO2 Level: " + level + " " + sensorsJSON[i].data.NO2.meta.units;
+
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
-
-  var colour = "green";
-  if (level > 40){
-    colour = "orange";
-  }
-  if (level > 80){
-    colour = "red";
-  }
-  var message = "NO2 Level: " + levelAndUnits;
 
   if (level !== -999){ //This plots the point on the map, providing this sensor
     //has data for the pollutant and has not returned the error level -999
   addMarker(lat, long, message, colour);
     }
   }
+
 }
 
 function plotCO(){
   var level;
-  var levelAndUnits;
+  var message;
   var lat;
   var long;
+  var colour;
 
   for (var i = 0; i < sensorsJSON.length; i++) {
 
@@ -177,24 +193,22 @@ function plotCO(){
 
     if (typeof sensorsJSON[i].data.CO !== 'undefined') {
       level = sensorsJSON[i].data.CO.data[sensorsJSON[i].latest];
+
+      colour = "green";
+      if (level > 0.3){
+        colour = "orange";
+      }
+      if (level > 0.6){
+        colour = "red";
+      }
+
       if (document.getElementById('round').checked){
         level = Math.round(level * 100)/100;
       }
-      levelAndUnits = level + " " + sensorsJSON[i].data.CO.meta.units;
+      message = "CO Level: " + level + " " + sensorsJSON[i].data.CO.meta.units;
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
-
-  var colour = "green";
-  if (level > 0.3){
-    colour = "orange";
-  }
-  if (level > 0.6){
-    colour = "red";
-  }
-
-
-  var message = "CO Level: " + levelAndUnits;
 
   if (level !== -999){ //This plots the point on the map, providing this sensor
     //has data for the pollutant and has not returned the error level -999
@@ -208,6 +222,7 @@ function plotAll(arrayOfSensors) {
   console.log("Plotting all");
   var lat;
   var long;
+
   var numberOfPollutants = 0; //If a sensor contains a pollutant, this variable
   //will have 1 added to it. If it still equals 0 after a particular sensor
   //has been processed, that means the sensor contains no NO2, NO or CO readings
@@ -219,6 +234,7 @@ function plotAll(arrayOfSensors) {
     long = arrayOfSensors[i].geom.coordinates[1];
     lat = lat - 0;
     long = long - 0; //this converts the JSON values long and lat to numbers
+
 
     var no2;
     var no;
@@ -285,18 +301,19 @@ function plotAll(arrayOfSensors) {
     }
     numberOfPollutants = 0; //This resets the numberOfPollutants variable.
   }
+
 }
 
 function addMarker(lat, long, message, colour) {
 
   var circle = L.circle([long, lat], {
     color: colour,
-    radius: 45
+    radius: 25
   }).addTo(fumeyMap);
 
   mapMarkers.push(circle);
 
-  circle.bindPopup(message).openPopup();
+  circle.bindPopup(message);
 }
 
 function clearMarkers() {
