@@ -1,4 +1,9 @@
-var fumeyMap = L.map('mapid').setView([54.98, -1.61], 14); //This creates the
+var newcastleUponTyne = [54.971, -1.617]; //The coordinates of the city in use.
+var dataURL = "http://uoweb1.ncl.ac.uk/api/v1/sensors/live.json?sensor_type=Air%20Quality&api_key=ijme39nrfrtuj8gz6ny4cvq1sp0gf5uto7p80v5kmvnhf5l86bxqlk33zap5x0wtwfur66x34fslel1j1g2h6jdxfs";
+//This is the URL of the data source that will give this application JSON data
+//containing air quality levels
+
+var fumeyMap = L.map('mapid').setView(newcastleUponTyne, 14); //This creates the
 //map and sets its starting view as Newcastle-upon-Tyne.
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -31,7 +36,7 @@ function getData() {
   document.getElementById("refreshSign").innerHTML = "Retrieving Data...";
 
   return $.ajax({
-    url: "http://uoweb1.ncl.ac.uk/api/v1/sensors/live.json?sensor_type=Air%20Quality&api_key=ijme39nrfrtuj8gz6ny4cvq1sp0gf5uto7p80v5kmvnhf5l86bxqlk33zap5x0wtwfur66x34fslel1j1g2h6jdxfs",
+    url: dataURL,
     type: "get",
     contentType: "json",
 
@@ -69,11 +74,11 @@ function plot() { //This function chooses which pollutant to plot on the map bas
   clearMarkers(); //This clears the mapped points so they can be replaced with new ones
 
 
-  if (document.getElementById('no1').checked){
-    plotNO();
-  }
-  else if (document.getElementById('no2').checked){
+  if (document.getElementById('no2').checked){
     plotNO2();
+  }
+  else if (document.getElementById('nox').checked){
+    plotNOx();
   }
   else if (document.getElementById('co').checked){
     plotCO();
@@ -84,52 +89,6 @@ function plot() { //This function chooses which pollutant to plot on the map bas
   else {
     console.log("error - no pollutant selected");
     //Due to the nature of raio buttons, this should never happen.
-  }
-
-}
-
-function plotNO(){
-  var level;
-  var message;
-  var lat;
-  var long;
-  var colour;
-
-  for (var i = 0; i < sensorsJSON.length; i++) {
-
-    lat = sensorsJSON[i].geom.coordinates[0];
-    long = sensorsJSON[i].geom.coordinates[1];
-    lat = lat - 0;
-    long = long - 0; //this converts the JSON values long and lat to numbers
-
-    if (typeof sensorsJSON[i].data.NO !== 'undefined') {
-      level = sensorsJSON[i].data.NO.data[sensorsJSON[i].latest];
-
-      colour = "green";
-      if (level > 40){
-        colour = "orange";
-      }
-      if (level > 80){
-        colour = "red";
-      }
-      if (document.getElementById('round').checked){
-        level = Math.round(level * 100)/100; //This plots level to two decimal places.
-        //As Math.round only rounds to the nearest integer, a quick and dirty way
-        //to plot to two decimal places is to multiple by 100, round, and divide
-        //by 100 again to get the desired result.
-      }
-      message = "NO Level: " + level + " " + sensorsJSON[i].data.NO.meta.units;
-
-  } else {
-    level = -999; //an error amount. These will not be plotted.
-  }
-
-
-
-  if (level !== -999){ //This plots the point on the map, providing this sensor
-    //has data for the pollutant and has not returned the error level -999
-  addMarker(lat, long, message, colour);
-    }
   }
 
 }
@@ -152,10 +111,10 @@ function plotNO2(){
       level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
 
       colour = "green";
-      if (level > 50){
+      if (level > 45){
         colour = "orange";
       }
-      if (level > 150){
+      if (level > 100){
         colour = "red";
       }
 
@@ -171,7 +130,76 @@ function plotNO2(){
 
   if (level !== -999){ //This plots the point on the map, providing this sensor
     //has data for the pollutant and has not returned the error level -999
+
+    if(document.getElementById('redOnly').checked){
+      if(colour == "red"){
+          addMarker(lat, long, message, colour);
+      }
+      //The pollutant is only plotted if it is red while the redOnly checkbox is checked.
+      //Else all colours are plotted.
+    } else {
   addMarker(lat, long, message, colour);
+      }
+    }
+  }
+
+}
+
+
+function plotNOx(){
+  var NO2Level;
+  var NOLevel;
+  var NOxLevel; //This will be calculated by adding the NO and NO2 levels for each sensor.
+  var message;
+  var lat;
+  var long;
+  var colour;
+
+  for (var i = 0; i < sensorsJSON.length; i++) {
+
+    lat = sensorsJSON[i].geom.coordinates[0];
+    long = sensorsJSON[i].geom.coordinates[1];
+    lat = lat - 0;
+    long = long - 0; //this converts the JSON values long and lat to numbers
+
+    if (typeof sensorsJSON[i].data.NO !== 'undefined' && typeof sensorsJSON[i].data.NO2 !== 'undefined') {
+      NOLevel = sensorsJSON[i].data.NO.data[sensorsJSON[i].latest];
+      NO2Level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
+      NOxLevel = NOLevel + NO2Level;
+
+      colour = "green";
+      if (NOxLevel > 45){
+        colour = "orange";
+      }
+      if (NOxLevel > 100){
+        colour = "red";
+      }
+      if (document.getElementById('round').checked){
+        NOxLevel = Math.round(NOxLevel * 100)/100; //This plots level to two decimal places.
+        //As Math.round only rounds to the nearest integer, a quick and dirty way
+        //to plot to two decimal places is to multiple by 100, round, and divide
+        //by 100 again to get the desired result.
+      }
+      message = "NOx Level: " + NOxLevel + " " + sensorsJSON[i].data.NO.meta.units;
+
+  } else {
+    NOxLevel = -999; //an error amount. These will not be plotted.
+  }
+
+
+
+  if (NOxLevel !== -999){ //This plots the point on the map, providing this sensor
+    //has data for the pollutant and has not returned the error level -999
+
+    if(document.getElementById('redOnly').checked){
+      if(colour == "red"){
+          addMarker(lat, long, message, colour);
+      }
+      //The pollutant is only plotted if it is red while the redOnly checkbox is checked.
+      //Else all colours are plotted.
+    } else {
+  addMarker(lat, long, message, colour);
+      }
     }
   }
 
@@ -195,10 +223,10 @@ function plotCO(){
       level = sensorsJSON[i].data.CO.data[sensorsJSON[i].latest];
 
       colour = "green";
-      if (level > 0.3){
+      if (level > 3){
         colour = "orange";
       }
-      if (level > 0.6){
+      if (level > 8.73){
         colour = "red";
       }
 
@@ -212,7 +240,16 @@ function plotCO(){
 
   if (level !== -999){ //This plots the point on the map, providing this sensor
     //has data for the pollutant and has not returned the error level -999
+
+    if(document.getElementById('redOnly').checked){
+      if(colour == "red"){
+          addMarker(lat, long, message, colour);
+      }
+      //The pollutant is only plotted if it is red while the redOnly checkbox is checked.
+      //Else all colours are plotted.
+    } else {
   addMarker(lat, long, message, colour);
+      }
     }
   }
 

@@ -2,15 +2,34 @@ body {
     background-color: springgreen;
 }
 
-h2, p {
+h1, h2, p {
   text-align: center;
 }
+
 
 #mapid {
   width: 800px;
   height: 500px;
-  margin-left: auto;
+  margin-left: 0px;
   margin-right: auto;
+}
+
+#instructions {
+  float:left;
+  width:250px;
+  margin-left: 20px;
+  margin-right: 20px;
+  overflow:hidden;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+#keydiv {
+  float:right;
+  width:100px;
+  margin-left: 10px;
+  margin-right: 50px;
+  overflow:hidden;
 }
 
 #refreshSign{
