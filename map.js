@@ -3,7 +3,7 @@ var dataURL = "http://uoweb1.ncl.ac.uk/api/v1/sensors/live.json?sensor_type=Air%
 //This is the URL of the data source that will give this application JSON data
 //containing air quality levels
 
-var fumeyMap = L.map('mapid').setView(newcastleUponTyne, 14); //This creates the
+var pollutionMap = L.map('mapid').setView(newcastleUponTyne, 14); //This creates the
 //map and sets its starting view as Newcastle-upon-Tyne.
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -11,7 +11,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   maxZoom: 18,
   id: 'mapbox.streets',
   accessToken: 'pk.eyJ1IjoicGFhYXQiLCJhIjoiY2o1ZmFyZGg2MHg0ZzMzcnllejRjYnBobiJ9.iktT5ifPtfphaeOKUCQhkw'
-}).addTo(fumeyMap);
+}).addTo(pollutionMap);
 //This adds the tile layer to the map, or the visual aspect. It is an open source
 //tile layer from https://www.mapbox.com/
 
@@ -75,13 +75,13 @@ function plot() { //This function chooses which pollutant to plot on the map bas
 
 
   if (document.getElementById('no2').checked){
-    plotNO2();
+    plotNO2(sensorsJSON);//This passes sensorsJSON as the dataset to plot.
   }
   else if (document.getElementById('nox').checked){
-    plotNOx();
+    plotNOx(sensorsJSON);
   }
   else if (document.getElementById('co').checked){
-    plotCO();
+    plotCO(sensorsJSON);
   }
   else if (document.getElementById('all').checked){
     plotAll(sensorsJSON);
@@ -93,22 +93,22 @@ function plot() { //This function chooses which pollutant to plot on the map bas
 
 }
 
-function plotNO2(){
+function plotNO2(arrayOfSensors){
   var level;
   var message;
   var lat;
   var long;
   var colour;
 
-  for (var i = 0; i < sensorsJSON.length; i++) {
+  for (var i = 0; i < arrayOfSensors.length; i++) {
 
-    lat = sensorsJSON[i].geom.coordinates[0];
-    long = sensorsJSON[i].geom.coordinates[1];
+    lat = arrayOfSensors[i].geom.coordinates[0];
+    long = arrayOfSensors[i].geom.coordinates[1];
     lat = lat - 0;
     long = long - 0; //this converts the JSON values long and lat to numbers
 
-    if (typeof sensorsJSON[i].data.NO2 !== 'undefined') {
-      level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
+    if (typeof arrayOfSensors[i].data.NO2 !== 'undefined') {
+      level = arrayOfSensors[i].data.NO2.data[arrayOfSensors[i].latest];
 
       colour = "green";
       if (level > 45){
@@ -122,7 +122,7 @@ function plotNO2(){
         level = Math.round(level * 100)/100;
       }
 
-      message = "NO2 Level: " + level + " " + sensorsJSON[i].data.NO2.meta.units;
+      message = "NO2 Level: " + level + " " + arrayOfSensors[i].data.NO2.meta.units;
 
   } else {
     level = -999; //an error amount. These will not be plotted.
@@ -146,7 +146,7 @@ function plotNO2(){
 }
 
 
-function plotNOx(){
+function plotNOx(arrayOfSensors){
   var NO2Level;
   var NOLevel;
   var NOxLevel; //This will be calculated by adding the NO and NO2 levels for each sensor.
@@ -155,16 +155,16 @@ function plotNOx(){
   var long;
   var colour;
 
-  for (var i = 0; i < sensorsJSON.length; i++) {
+  for (var i = 0; i < arrayOfSensors.length; i++) {
 
-    lat = sensorsJSON[i].geom.coordinates[0];
-    long = sensorsJSON[i].geom.coordinates[1];
+    lat = arrayOfSensors[i].geom.coordinates[0];
+    long = arrayOfSensors[i].geom.coordinates[1];
     lat = lat - 0;
     long = long - 0; //this converts the JSON values long and lat to numbers
 
-    if (typeof sensorsJSON[i].data.NO !== 'undefined' && typeof sensorsJSON[i].data.NO2 !== 'undefined') {
-      NOLevel = sensorsJSON[i].data.NO.data[sensorsJSON[i].latest];
-      NO2Level = sensorsJSON[i].data.NO2.data[sensorsJSON[i].latest];
+    if (typeof arrayOfSensors[i].data.NO !== 'undefined' && typeof arrayOfSensors[i].data.NO2 !== 'undefined') {
+      NOLevel = arrayOfSensors[i].data.NO.data[arrayOfSensors[i].latest];
+      NO2Level = arrayOfSensors[i].data.NO2.data[arrayOfSensors[i].latest];
       NOxLevel = NOLevel + NO2Level;
 
       colour = "green";
@@ -180,7 +180,7 @@ function plotNOx(){
         //to plot to two decimal places is to multiple by 100, round, and divide
         //by 100 again to get the desired result.
       }
-      message = "NOx Level: " + NOxLevel + " " + sensorsJSON[i].data.NO.meta.units;
+      message = "NOx Level: " + NOxLevel + " " + arrayOfSensors[i].data.NO.meta.units;
 
   } else {
     NOxLevel = -999; //an error amount. These will not be plotted.
@@ -205,22 +205,22 @@ function plotNOx(){
 
 }
 
-function plotCO(){
+function plotCO(arrayOfSensors){
   var level;
   var message;
   var lat;
   var long;
   var colour;
 
-  for (var i = 0; i < sensorsJSON.length; i++) {
+  for (var i = 0; i < arrayOfSensors.length; i++) {
 
-    lat = sensorsJSON[i].geom.coordinates[0];
-    long = sensorsJSON[i].geom.coordinates[1];
+    lat = arrayOfSensors[i].geom.coordinates[0];
+    long = arrayOfSensors[i].geom.coordinates[1];
     lat = lat - 0;
     long = long - 0; //this converts the JSON values long and lat to numbers
 
-    if (typeof sensorsJSON[i].data.CO !== 'undefined') {
-      level = sensorsJSON[i].data.CO.data[sensorsJSON[i].latest];
+    if (typeof arrayOfSensors[i].data.CO !== 'undefined') {
+      level = arrayOfSensors[i].data.CO.data[arrayOfSensors[i].latest];
 
       colour = "green";
       if (level > 3){
@@ -233,7 +233,7 @@ function plotCO(){
       if (document.getElementById('round').checked){
         level = Math.round(level * 100)/100;
       }
-      message = "CO Level: " + level + " " + sensorsJSON[i].data.CO.meta.units;
+      message = "CO Level: " + level + " " + arrayOfSensors[i].data.CO.meta.units;
   } else {
     level = -999; //an error amount. These will not be plotted.
   }
@@ -298,7 +298,7 @@ function plotAll(arrayOfSensors) {
       if (document.getElementById('round').checked){
         no2Level = Math.round(no2Level * 100)/100;
       }
-      no2 = "NO2: " + no2Level + " " + sensorsJSON[i].data.NO2.meta.units;
+      no2 = "NO2: " + no2Level + " " + arrayOfSensors[i].data.NO2.meta.units;
       numberOfPollutants++;
     }
     else {
@@ -310,7 +310,7 @@ function plotAll(arrayOfSensors) {
       if (document.getElementById('round').checked){
         noLevel = Math.round(noLevel * 100)/100;
       }
-      no = "NO: " + noLevel + " " + sensorsJSON[i].data.NO.meta.units;
+      no = "NO: " + noLevel + " " + arrayOfSensors[i].data.NO.meta.units;
       numberOfPollutants++;
     }
     else {
@@ -322,7 +322,7 @@ function plotAll(arrayOfSensors) {
       if (document.getElementById('round').checked){
         coLevel = Math.round(coLevel * 100)/100;
       }
-      co = "CO: " + coLevel + " " + sensorsJSON[i].data.CO.meta.units;
+      co = "CO: " + coLevel + " " + arrayOfSensors[i].data.CO.meta.units;
       numberOfPollutants++;
     }
     else {
@@ -346,7 +346,7 @@ function addMarker(lat, long, message, colour) {
   var circle = L.circle([long, lat], {
     color: colour,
     radius: 25
-  }).addTo(fumeyMap);
+  }).addTo(pollutionMap);
 
   mapMarkers.push(circle);
 
