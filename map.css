@@ -1,5 +1,98 @@
+
+
 body {
-    background-color: springgreen;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  background-color: darkblue;
+
+}
+
+
+.header,
+.marketing,
+.footer {
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+
+
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 3rem;
+}
+
+/* Custom page footer */
+.footer {
+  padding-top: 1.5rem;
+  color: #777;
+  border-top: .05rem solid #e5e5e5;
+}
+
+/* Customize container */
+@media (min-width: 48em) {
+  .container {
+    max-width: 46rem;
+  }
+}
+.container-narrow > hr {
+  margin: 2rem 0;
+}
+
+.jumbotron {
+  text-align: center;
+}
+.jumbotron .btn {
+  padding: .75rem .5rem;
+  font-size: 1.5rem;
+}
+
+.section {
+  -ms-flex:0 0 41.666667%;
+  flex:0 0 41.666667%;
+  max-width:41.666667%;
+  color: #d9d9d9;
+}
+
+.blanksection{
+  -ms-flex:0 0 9.666667%;
+  flex:0 0 9.666667%;
+  max-width:9.666667%;
+}
+
+.key {
+  font-size: 40;
+  background-color: gray;
+}
+/* Supporting marketing content */
+.marketing {
+  margin: 3rem 0;
+}
+.marketing p + h4 {
+  margin-top: 1.5rem;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 48em) {
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
 }
 
 h1, h2, p {
@@ -15,13 +108,13 @@ h1, h2, p {
 }
 
 #mapid {
-  width: 800px;
+  width: 640px;
   height: 500px;
   margin-left: 0px;
   margin-right: auto;
 }
 
-#instructions {
+/*#instructions {
   float:left;
   width:250px;
   margin-left: 20px;
@@ -29,7 +122,7 @@ h1, h2, p {
   overflow:hidden;
   font-family: monospace;
   font-size: 13px;
-}
+}*/
 
 #keydiv {
   float:right;

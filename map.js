@@ -33,7 +33,9 @@ autoRefreshData(120000);//this calls the auto refresh function with a time to
 
 function getData() {
   console.log("Retrieving Data...");
-  document.getElementById("refreshSign").innerHTML = "Retrieving Data...";
+  var dataString = "Retrieving Data...";
+  document.getElementById("refreshSign").innerHTML = dataString.fontcolor("red");
+
 
   return $.ajax({
     url: dataURL,
@@ -51,7 +53,8 @@ function getData() {
       }
       plot();//This will plot whichever pollutant is selected in the radio button
       //choices in the map.html file.
-      document.getElementById("refreshSign").innerHTML = "";
+      var dataString2 = "Data retrieved.";
+      document.getElementById("refreshSign").innerHTML = dataString2.fontcolor("black");
     }
   });
 

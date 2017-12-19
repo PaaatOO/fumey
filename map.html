@@ -5,6 +5,8 @@
 <head>
   <title>Urban Pollution Visulisation web service</title>
 
+  <link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
   integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
   crossorigin=""/>
@@ -21,52 +23,87 @@
 </head>
 <body>
 
+  <div class="container">
+        <header class="header clearfix">
+          <nav>
+            <ul class="nav nav-pills float-right">
+              <li class="nav-item">
+                <a class="nav-link active">
+                  <p><input type='radio' id='no2' name='pollutant' onclick="plot()" value='NO2' checked = "checked">Nitrogen Dioxide (NO2)
+                  <input type='radio' id='nox' name='pollutant' onclick="plot()" value='NO'>Nitrogen Oxides (NOx) <!-- The ID being no made the onclick not work so it's no1  -->
+                  <input type='radio' id='co' name='pollutant' onclick="plot()" value='CO'>Carbon Monoxide (CO)
+                  <input type='radio' id='all' name='pollutant' onclick="plot()" value='all'>All (Raw data)
+                </p>
+              </a>
+              </li>
 
-  <p><input type='radio' id='no2' name='pollutant' onclick="plot()" value='NO2' checked = "checked">Nitrogen Dioxide (NO2)
-    <input type='radio' id='nox' name='pollutant' onclick="plot()" value='NO'>Nitrogen Oxides (NOx) <!-- The ID being no made the onclick not work so it's no1  -->
-    <input type='radio' id='co' name='pollutant' onclick="plot()" value='CO'>Carbon Monoxide (CO)
-    <input type='radio' id='all' name='pollutant' onclick="plot()" value='all'>All (Raw data)
+            </ul>
+          </nav>
+        </header>
+
+
+
+
+  <div class="jumbotron">
+    <p id="refreshSign" color="red"></p>
+    <div id="mapid"></div>
+    <p>
+      <input type='checkbox' id="round" onclick="plot()" checked = "checked"> Round results to two decimal places<br>
+      <input type='checkbox' id="autoRefresh" checked = "checked"> Automatically refresh data every 2 minutes<br>
+      <input type='checkbox' id="redOnly" onclick="plot()"> Plot only red (dangerous) results<br>
+    </p>
+
+    <p class="key">
+      <b><u>KEY</b></u><br>
+      <b>NO2 and NOx: <font color = "red"> Over 100ppb, </font><font color = "orange"> 45-100ppb, </font><font color="green">0-45ppb</font><br>
+      CO: <font color = "red"> Over 8.7ppm, </font><font color = "orange"> 3-8.7ppm, </font><font color="green">0-3ppm</font></b><br><br>
   </p>
-
-  <p>
-
-    <input type='checkbox' id="round" onclick="plot()" checked = "checked"> Round results to two decimal places
-    <input type='checkbox' id="autoRefresh" checked = "checked"> Automatically refresh data every 2 minutes
-    <input type='checkbox' id="redOnly" onclick="plot()"> Plot only red (dangerous) results
+  </div>
 
 
-  </p>
 
-  <div id="instructions">
+<div class="row marketing">
+
+  <!-- <div id="instructions"> -->
+      <div class="section">
     <p>
       Select a Pollutant above to visualise its current levels.<br><br>
       Each pollutant's levels will be colour-coded at each sensor point.
       A key below will show the levels. Please note that All (Raw Data) is not colour coded, and includes NO2 and NO separately, as opposed to being combined as NOx.<br><br>
       You can see each sensor's pollutant level by clicking on it.<br><br>
+    </p>
+      </div>
 
-      <font size = 4>
-      <b><u>KEY</b></u><br>
-      <b>NO2 and NOx: <font color = "red"> Over 100ppb, </font><font color = "orange"> 45-100ppb, </font><font color="green">0-45ppb</font><br>
-      CO: <font color = "red"> Over 8.7ppm, </font><font color = "orange"> 3-8.7ppm, </font><font color="green">0-3ppm</font></b><br><br>
-    </font>
+      <div class="blanksection"></div>
+
+      <div class="section">
+    <p>
 
       Selecting "Plot only red" will display only the most dangerous levels.
       You could use this feature for example if you are cycling though the city and wish to
       travel avoiding any dangerous areas of pollution.<br><br>
 
       If no map can be seen, maximise this page!!<br><br>
-      <a href = "index.html">Return to Home Page</a>
+
     </p>
   </div>
 
 
-  <div id="mapid"></div>
+  </div>
+
+
+  <div class="footer"><a href = "index.html">Return to Home Page</a></div>
 
 
 
-  <p id="refreshSign" color="red"></p>
+
+
 
   <script src="map.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
 
 
 

@@ -1,36 +1,66 @@
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<head>
-  <title>Urban Pollution Visulisation web service</title>
-  <link rel="stylesheet" href="map.css">
-</head>
+    <title>Urban Pollution Visulisation web service</title>
 
-<body>
-  <h2>
-    Welcome to the Urban Pollution Visualisation web service.</h2>
-<p>
-This application was implemented by Patrick McCluskey as part of a ten-week Master's project in
-Computer Science at the University of Newcastle.<br><br>
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
 
-The service is intended to run persistently on your monitor, so that you will be aware
-of the current pollution levels in certain areas of Newcastle-upon-Tyne.<br>
-It allows you to visualise in the urban space those areas which are dangerous either
-from Nitrogen Dioxide (NO2), Nitrogen Oxides (NOx)  or Carbon Monoxide (CO).<br>
-By default, the web service will refresh automatically every 2
-minutes so that you can see the current situation as it happens.<br>
-This option can be unchecked to allow more in-depth study of one particular set of data.<br><br>
+    <!-- Custom styles for this template -->
+    <link href="indexcss.css" rel="stylesheet">
+  </head>
 
-The data is assembled from the live data feeds of the <a href = "http://uoweb1.ncl.ac.uk/">Urban Observatory</a>.<br>
-The data is colour coded into a traffic-light system for danger to humans from the levels shown. Clicking on the plotted points will reveal their specific value.<br>
-If desired, only red (dangerous) levels will be plotted on the map, by checking the relevant box.
-</p>
-<h1><a href = "map.html" >Proceed to Live Map</a></h1>
-<p><img src = "fumes.jpg"></p>
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
 
 
 
+          <main role="main" class="inner cover">
+            <p class="lead">
+              <h2>
+                Welcome to the Urban Pollution Visualisation web service.</h2>
+                <br>
+            <p>
+            This application was implemented by Patrick McCluskey as part of a ten-week Master's project in
+            Computer Science at the University of Newcastle.<br><br>
 
-</body>
+            The service is intended to run persistently on your monitor, so that you will be aware
+            of the current pollution levels in certain areas of Newcastle-upon-Tyne.<br>
+            It allows you to visualise in the urban space those areas which are dangerous either
+            from Nitrogen Dioxide (NO2), Nitrogen Oxides (NOx)  or Carbon Monoxide (CO).<br>
+            By default, the web service will refresh automatically every 2
+            minutes so that you can see the current situation as it happens.<br>
+            This option can be unchecked to allow more in-depth study of one particular set of data.<br><br>
+
+            The data is assembled from the live data feeds of the <a href = "http://uoweb1.ncl.ac.uk/">Urban Observatory</a>.<br>
+            The data is colour coded into a traffic-light system for danger to humans from the levels shown. Clicking on the plotted points will reveal their specific value.<br>
+            If desired, only red (dangerous) levels will be plotted on the map, by checking the relevant box.
+              </p>
+            </p>
+            <p class="lead">
+              <a href="map.html" class="btn btn-lg btn-secondary">Proceed to Live Map</a>
+            </p>
+          </main>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  </body>
 </html>
